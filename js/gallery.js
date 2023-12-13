@@ -64,45 +64,45 @@ const images = [
     },
   ];
   
-  const marcup = images.map(({ preview, original, description }) => 
-   `<li class="gallery-item">
-    <a class="gallery-link" href="${original}">
-      <img
-        class="gallery-image"
-        src="${preview}"
-        data-source="${original}"
-        alt="${description}"
-      />
-    </a>
-  </li>`).join('');
-  
-  const gallery = document.querySelector('.gallery');
-  gallery.innerHTML = marcup;
-  
-  gallery.addEventListener('click', (event) => {
-    event.preventDefault();
-  
-    const clickedOnImg = event.target.dataset.source
-    if (!clickedOnImg) {
-      return;
-    };
-    console.log(clickedOnImg);
-  
-    const myModal = basicLightbox.create(`<img width="1400" height="900" 
-    src="${clickedOnImg}">`,
+  const markup = images.map(({ preview, original, description }) => 
+ `<li class="gallery-item">
+  <a class="gallery-link" href="${original}">
+    <img
+      class="gallery-image"
+      src="${preview}"
+      data-source="${original}"
+      alt="${description}"
+    />
+  </a>
+</li>`).join('');
+
+const gallery = document.querySelector('.gallery');
+gallery.innerHTML = markup;
+
+const handleKeyDown = (event, modal) => {
+  if (event.key === "Escape") {
+    modal.close();
+  }
+};
+
+gallery.addEventListener('click', (event) => {
+  event.preventDefault();
+
+  const clickedOnImg = event.target.dataset.source
+  if (!clickedOnImg) {
+    return;
+  };
+  console.log(clickedOnImg);
+
+  const myModal = basicLightbox.create(`<img width="1400" height="900" 
+  src="${clickedOnImg}">`,
     {
-      onShow: (myModal) => {
-        document.addEventListener("keydown", (event) => {
-          if (event.key === "Escape") {
-            myModal.close();
-          }
-      })},
-      onClose: (myModal) => {
-        document.removeEventListener("keydown", (event) => {
-          if (event.key === "Escape") {
-            myModal.close();
-            myModal = null;
-        }
-      })}
-    }).show();
-  });
+    onShow: () => {
+      document.addEventListener("keydown", (event) => handleKeyDown(event, myModal));
+    },
+    onClose: () => {
+      document.removeEventListener("keydown", (event) => handleKeyDown(event, myModal));
+    }
+    })
+    myModal.show();
+});
